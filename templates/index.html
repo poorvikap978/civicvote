@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}CivicVote — Fingerprint Based Voting Machine{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<div style="text-align:center; padding:60px 20px 40px;">
+    <div style="font-size:4rem; margin-bottom:16px;">🗳️</div>
+    <h1 style="font-family:var(--display); font-size:3rem; color:var(--white); line-height:1.2;">
+        Fingerprint Based<br><span style="color:var(--gold);">Voting Machine</span>
+    </h1>
+    <p
+        style="color:var(--muted); font-size:1.1rem; margin-top:16px; max-width:600px; margin-left:auto; margin-right:auto;">
+        Fair, transparent, and tamper-proof elections powered by simulated biometric verification and PostgreSQL
+        triggers.
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:32px;">
+        <a href="/verify"
+            style="background:var(--gold); color:var(--navy); padding:14px 32px; border-radius:8px; text-decoration:none; font-weight:700; font-size:1rem;">Cast
+            Your Vote</a>
+        <a href="/results"
+            style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:14px 32px; border-radius:8px; text-decoration:none; font-weight:700; font-size:1rem;">Live
+            Results</a>
+    </div>
+</div>
+
+<!-- Features -->
+<div class="grid grid-3" style="margin-top:40px;">
+    <div class="card" style="text-align:center; padding:32px 20px;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🔒</div>
+        <h3 style="font-family:var(--display); font-size:1.2rem; color:var(--gold); margin-bottom:8px;">Biometric
+            Verification</h3>
+        <p style="color:var(--muted); font-size:0.88rem;">Voter ID + Aadhaar simulation ensures only verified voters can
+            cast ballots.</p>
+    </div>
+    <div class="card" style="text-align:center; padding:32px 20px;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">⚡</div>
+        <h3 style="font-family:var(--display); font-size:1.2rem; color:var(--gold); margin-bottom:8px;">Duplicate
+            Prevention</h3>
+        <p style="color:var(--muted); font-size:0.88rem;">Database-level UNIQUE constraint and triggers block any
+            attempt to vote twice.</p>
+    </div>
+    <div class="card" style="text-align:center; padding:32px 20px;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">📊</div>
+        <h3 style="font-family:var(--display); font-size:1.2rem; color:var(--gold); margin-bottom:8px;">Live Results
+        </h3>
+        <p style="color:var(--muted); font-size:0.88rem;">Real-time vote counts powered by PostgreSQL views and window
+            functions.</p>
+    </div>
+</div>
+
+<!-- DBMS Features -->
+<div class="card" style="margin-top:24px;">
+    <div class="card-title">DBMS Features Implemented</div>
+    <div class="grid grid-2" style="margin-top:16px;">
+        <div>
+            <p style="font-size:0.88rem; margin-bottom:8px;">✅ <strong style="color:var(--gold);">Trigger 1</strong> —
+                Auto-updates candidate vote count after each vote</p>
+            <p style="font-size:0.88rem; margin-bottom:8px;">✅ <strong style="color:var(--gold);">Trigger 2</strong> —
+                Marks voter as voted + logs to audit trail</p>
+            <p style="font-size:0.88rem;">✅ <strong style="color:var(--gold);">View 1</strong> — Live results with vote
+                percentages</p>
+        </div>
+        <div>
+            <p style="font-size:0.88rem; margin-bottom:8px;">✅ <strong style="color:var(--gold);">View 2</strong> —
+                Voter turnout summary per constituency</p>
+            <p style="font-size:0.88rem; margin-bottom:8px;">✅ <strong style="color:var(--gold);">Stored
+                    Procedure</strong> — cast_vote() with ROLLBACK on duplicate/invalid</p>
+            <p style="font-size:0.88rem;">✅ <strong style="color:var(--gold);">UNIQUE Constraint</strong> — Prevents
+                duplicate voting at DB level</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

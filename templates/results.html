@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Live Results — CivicVote{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Live Election Results</h2>
+    <p>Real-time vote counts powered by PostgreSQL views</p>
+</div>
+
+<!-- Turnout Summary -->
+{% if turnout %}
+<div class="grid grid-3" style="margin-bottom:28px;">
+    {% for t in turnout %}
+    <div class="card">
+        <div class="card-title">{{ t.election_title[:30] }}...</div>
+        <div style="font-size:2rem; font-weight:700; color:var(--gold); margin:8px 0;">
+            {{ t.turnout_percentage }}%
+        </div>
+        <div style="color:var(--muted); font-size:0.82rem;">
+            {{ t.votes_cast }} votes of {{ t.total_registered_voters }} registered
+        </div>
+        <div class="progress-bar" style="margin-top:10px;">
+            <div class="progress-fill" style="width:{{ t.turnout_percentage or 0 }}%"></div>
+        </div>
+        <span class="badge badge-{{ t.status }}" style="margin-top:8px;">{{ t.status }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Results per election -->
+{% set ns = namespace(current_election='') %}
+{% for result in results %}
+{% if result.election_title != ns.current_election %}
+{% if ns.current_election != '' %}</div>{% endif %}
+{% set ns.current_election = result.election_title %}
+<div class="card" style="margin-bottom:20px;">
+    <div class="card-title">{{ result.election_title }}</div>
+    <div style="margin-top:16px;">
+        {% endif %}
+
+        <div style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div>
+                    <span style="font-weight:600; font-size:0.95rem;">{{ result.candidate_name }}</span>
+                    <span style="color:var(--muted); font-size:0.82rem; margin-left:8px;">{{ result.party }} · {{
+                        result.party_symbol }}</span>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-weight:700; color:var(--gold); font-size:1.1rem;">{{ result.vote_count }}</span>
+                    <span style="color:var(--muted); font-size:0.82rem;"> votes ({{ result.vote_percentage }}%)</span>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:{{ result.vote_percentage or 0 }}%"></div>
+            </div>
+        </div>
+
+        {% endfor %}
+        {% if results %}
+    </div>
+</div>{% endif %}
+
+{% if not results %}
+<div class="card" style="text-align:center; padding:40px;">
+    <div style="font-size:3rem; margin-bottom:16px;">📊</div>
+    <p style="color:var(--muted);">No votes cast yet. Results will appear here in real-time.</p>
+</div>
+{% endif %}
+
+<p style="text-align:center; color:var(--muted); font-size:0.8rem; margin-top:16px;">
+    🔄 Refresh page to see latest results
+</p>
+{% endblock %}

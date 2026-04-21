@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% block title %}Voter Verification — CivicVote{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .step {
+        display: none;
+    }
+
+    .step.active {
+        display: block;
+    }
+
+    #webcamBox {
+        position: relative;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 3px solid var(--gold);
+        background: #000;
+    }
+
+    #webcam {
+        width: 100%;
+        display: block;
+        border-radius: 10px;
+    }
+
+    .scan-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--gold);
+        box-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
+        animation: scanDown 2s linear infinite;
+        display: none;
+    }
+
+    @keyframes scanDown {
+        0% {
+            top: 0;
+        }
+
+        100% {
+            top: 100%;
+        }
+    }
+
+    .face-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 140px;
+        height: 170px;
+        border: 3px solid var(--gold);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.3);
+        pointer-events: none;
+    }
+
+    .corner {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-color: var(--gold);
+        border-style: solid;
+    }
+
+    .corner-tl {
+        top: 8px;
+        left: 8px;
+        border-width: 3px 0 0 3px;
+    }
+
+    .corner-tr {
+        top: 8px;
+        right: 8px;
+        border-width: 3px 3px 0 0;
+    }
+
+    .corner-bl {
+        bottom: 8px;
+        left: 8px;
+        border-width: 0 0 3px 3px;
+    }
+
+    .corner-br {
+        bottom: 8px;
+        right: 8px;
+        border-width: 0 3px 3px 0;
+    }
+
+    .status-bar {
+        text-align: center;
+        padding: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--gold);
+        letter-spacing: 1px;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .progress-ring {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+    }
+
+    .progress-ring circle {
+        fill: none;
+        stroke: var(--gold);
+        stroke-width: 4;
+        stroke-dasharray: 220;
+        stroke-dashoffset: 220;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        transition: stroke-dashoffset 2s linear;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:500px; margin:40px auto;">
+
+    <!-- STEP 1: Enter Credentials -->
+    <div class="step active" id="step1">
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="font-size:3rem;">🗳️</div>
+            <h2 style="font-family:var(--display); font-size:1.8rem; margin-top:12px;">Voter Verification</h2>
+            <p style="color:var(--muted); margin-top:8px; font-size:0.9rem;">Step 1 of 2 — Enter your credentials</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Identity Verification</div>
+            <div style="margin-top:16px;">
+                <div class="form-group">
+                    <label>Voter Card Number</label>
+                    <input type="text" id="voter_card_no" required placeholder="e.g. KA0000001"
+                        style="letter-spacing:2px; font-size:1rem;" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Aadhaar Number (12 digits)</label>
+                    <input type="text" id="aadhaar_no" required placeholder="12-digit Aadhaar" maxlength="12"
+                        pattern="[0-9]{12}" style="letter-spacing:3px; font-size:1rem;">
+                    <small style="color:var(--muted); font-size:0.75rem; margin-top:4px; display:block;">
+                        🔒 Simulated biometric ID — must match registered Aadhaar
+                    </small>
+                </div>
+                <button class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem;"
+                    onclick="proceedToFace()">
+                    Next — Face Scan →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: Face Scan -->
+    <div class="step" id="step2">
+        <div style="text-align:center; margin-bottom:20px;">
+            <div style="font-size:3rem;">📷</div>
+            <h2 style="font-family:var(--display); font-size:1.8rem; margin-top:12px;">Face Recognition</h2>
+            <p style="color:var(--muted); margin-top:8px; font-size:0.9rem;">Step 2 of 2 — Position your face in the
+                frame</p>
+        </div>
+
+        <div class="card">
+            <div id="webcamBox">
+                <video id="webcam" autoplay playsinline></video>
+                <div class="face-overlay"></div>
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                <div class="scan-line" id="scanLine"></div>
+            </div>
+            <div class="status-bar" id="statusBar">📷 Position your face in the oval</div>
+            <canvas id="canvas" style="display:none;"></canvas>
+
+            <button class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem; margin-top:16px;"
+                id="scanBtn" onclick="startFaceScan()">
+                🔍 Scan Face
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 3: Verified Success -->
+    <div class="step" id="step3">
+        <div style="text-align:center; padding:40px 20px;">
+            <div class="success-icon">✅</div>
+            <h2 style="font-family:var(--display); font-size:2rem; color:var(--green); margin-top:16px;">Face Verified!
+            </h2>
+            <p style="color:var(--muted); margin-top:8px;">Biometric authentication successful. Redirecting to
+                elections...</p>
+            <div style="margin-top:24px;">
+                <svg class="progress-ring" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" id="progressRing" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Hidden form to submit -->
+        <form method="POST" id="hiddenForm" style="display:none;">
+            <input type="hidden" name="voter_card_no" id="hidden_voter_card">
+            <input type="hidden" name="aadhaar_no" id="hidden_aadhaar">
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let stream = null;
+
+    function proceedToFace() {
+        const voterCard = document.getElementById('voter_card_no').value.trim();
+        const aadhaar = document.getElementById('aadhaar_no').value.trim();
+
+        if (!voterCard || aadhaar.length !== 12 || isNaN(aadhaar)) {
+            alert('Please enter a valid Voter Card Number and 12-digit Aadhaar number.');
+            return;
+        }
+
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        startWebcam();
+    }
+
+    async function startWebcam() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            document.getElementById('webcam').srcObject = stream;
+        } catch (err) {
+            document.getElementById('statusBar').textContent = '⚠️ Camera not available — click Scan Face to continue';
+        }
+    }
+
+    function startFaceScan() {
+        const btn = document.getElementById('scanBtn');
+        const scanLine = document.getElementById('scanLine');
+        const statusBar = document.getElementById('statusBar');
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Scanning...';
+        scanLine.style.display = 'block';
+        statusBar.textContent = '🔍 Detecting face...';
+
+        // Phase 1: Detecting
+        setTimeout(() => {
+            statusBar.textContent = '📊 Analyzing biometric data...';
+        }, 800);
+
+        // Phase 2: Analyzing
+        setTimeout(() => {
+            statusBar.textContent = '🔐 Matching with database...';
+        }, 1600);
+
+        // Phase 3: Matching
+        setTimeout(() => {
+            statusBar.textContent = '✅ Face matched successfully!';
+            scanLine.style.display = 'none';
+        }, 2400);
+
+        // Phase 4: Complete — stop webcam and submit
+        setTimeout(() => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            showVerified();
+        }, 3000);
+    }
+
+    function showVerified() {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.add('active');
+
+        // Animate progress ring
+        const ring = document.getElementById('progressRing');
+        setTimeout(() => {
+            ring.style.strokeDashoffset = '0';
+        }, 100);
+
+        // Fill hidden form and submit
+        document.getElementById('hidden_voter_card').value =
+            document.getElementById('voter_card_no').value.trim();
+        document.getElementById('hidden_aadhaar').value =
+            document.getElementById('aadhaar_no').value.trim();
+
+        // Submit after animation
+        setTimeout(() => {
+            document.getElementById('hiddenForm').submit();
+        }, 2500);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — CivicVote{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Election Commission Dashboard</h2>
+    <p>Manage elections, voters, candidates and monitor results</p>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-4" style="margin-bottom:24px;">
+    <div class="card" style="text-align:center;">
+        <div class="card-title">Total Voters</div>
+        <div style="font-size:2rem; font-weight:700; color:var(--gold);">{{ total_voters }}</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div class="card-title">Votes Cast</div>
+        <div style="font-size:2rem; font-weight:700; color:var(--green);">{{ total_votes }}</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div class="card-title">Candidates</div>
+        <div style="font-size:2rem; font-weight:700; color:var(--text);">{{ total_candidates }}</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div class="card-title">Elections</div>
+        <div style="font-size:2rem; font-weight:700; color:var(--text);">{{ elections|length }}</div>
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="grid grid-3" style="margin-bottom:24px;">
+    <a href="/admin/voters" style="text-decoration:none;">
+        <div class="card" style="text-align:center; cursor:pointer; transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:2rem; margin-bottom:8px;">👥</div>
+            <div style="font-weight:600; color:var(--gold);">Manage Voters</div>
+            <div style="color:var(--muted); font-size:0.82rem; margin-top:4px;">Register & verify voters</div>
+        </div>
+    </a>
+    <a href="/admin/elections" style="text-decoration:none;">
+        <div class="card" style="text-align:center; cursor:pointer; transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:2rem; margin-bottom:8px;">🗳️</div>
+            <div style="font-weight:600; color:var(--gold);">Manage Elections</div>
+            <div style="color:var(--muted); font-size:0.82rem; margin-top:4px;">Create & manage elections</div>
+        </div>
+    </a>
+    <a href="/admin/candidates" style="text-decoration:none;">
+        <div class="card" style="text-align:center; cursor:pointer; transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:2rem; margin-bottom:8px;">🏛️</div>
+            <div style="font-weight:600; color:var(--gold);">Manage Candidates</div>
+            <div style="color:var(--muted); font-size:0.82rem; margin-top:4px;">Add election candidates</div>
+        </div>
+    </a>
+</div>
+
+<!-- Audit Log -->
+<div class="card">
+    <div class="card-title">Recent Audit Log</div>
+    <table style="margin-top:12px;">
+        <tr>
+            <th>Time</th>
+            <th>Voter</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th>Details</th>
+        </tr>
+        {% for log in recent_logs %}
+        <tr>
+            <td style="color:var(--muted); font-size:0.8rem;">{{ log.logged_at.strftime('%d %b %H:%M') if log.logged_at
+                else '' }}</td>
+            <td>{{ log.full_name or '—' }}</td>
+            <td style="font-size:0.82rem;">{{ log.action }}</td>
+            <td><span class="badge badge-{{ log.status }}">{{ log.status }}</span></td>
+            <td style="color:var(--muted); font-size:0.8rem;">{{ log.details or '—' }}</td>
+        </tr>
+        {% endfor %}
+        {% if not recent_logs %}
+        <tr>
+            <td colspan="5" style="text-align:center; color:var(--muted);">No activity yet</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endblock %}

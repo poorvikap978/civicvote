@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Cast Your Vote — CivicVote{% endblock %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+    <div class="page-header">
+        <h2>{{ election.title }}</h2>
+        <p>Voter: <strong style="color:var(--gold);">{{ voter_name }}</strong> — Select one candidate and submit your
+            vote</p>
+    </div>
+
+    <div class="card" style="margin-bottom:20px; background:rgba(244,167,38,0.05); border-color:rgba(244,167,38,0.3);">
+        <p style="font-size:0.88rem; color:var(--gold);">
+            ⚠️ <strong>Important:</strong> Your vote is final and cannot be changed. Each voter can vote only once per
+            election.
+        </p>
+    </div>
+
+    <form method="POST" id="voteForm">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+            {% for candidate in candidates %}
+            <label style="cursor:pointer;" for="cand_{{ candidate.candidate_id }}">
+                <div class="card" id="card_{{ candidate.candidate_id }}"
+                    style="display:flex; align-items:center; gap:16px; transition:all 0.2s;">
+                    <input type="radio" name="candidate_id" value="{{ candidate.candidate_id }}"
+                        id="cand_{{ candidate.candidate_id }}" required
+                        style="width:20px; height:20px; accent-color:var(--gold);"
+                        onchange="highlightCard({{ candidate.candidate_id }})">
+                    <div style="flex:1;">
+                        <div style="font-size:1.1rem; font-weight:600; color:var(--white);">{{ candidate.full_name }}
+                        </div>
+                        <div style="color:var(--muted); font-size:0.85rem; margin-top:2px;">
+                            {{ candidate.party }} · Symbol: {{ candidate.party_symbol }}
+                        </div>
+                        {% if candidate.manifesto %}
+                        <div style="color:var(--muted); font-size:0.8rem; margin-top:4px;">{{ candidate.manifesto }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem;" id="submitBtn">
+            🗳️ Cast My Vote
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function highlightCard(id) {
+        document.querySelectorAll('[id^="card_"]').forEach(c => {
+            c.style.borderColor = 'var(--border)';
+            c.style.background = 'var(--card)';
+        });
+        const selected = document.getElementById('card_' + id);
+        selected.style.borderColor = 'var(--gold)';
+        selected.style.background = 'rgba(244,167,38,0.08)';
+    }
+
+    document.getElementById('voteForm').addEventListener('submit', function (e) {
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = '⏳ Submitting...';
+        btn.disabled = true;
+    });
+</script>
+{% endblock %}

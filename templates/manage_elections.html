@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Manage Elections — CivicVote{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>Manage Elections</h2>
+    <p>Create and manage elections</p>
+</div>
+<div class="grid grid-2">
+    <div class="card">
+        <div class="card-title">Create New Election</div>
+        <form method="POST" style="margin-top:16px;">
+            <div class="form-group">
+                <label>Election Title</label>
+                <input type="text" name="title" required placeholder="e.g. Municipal Elections 2026">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="2" placeholder="Brief description"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Constituency</label>
+                <select name="constituency_id" required>
+                    {% for c in constituencies %}
+                    <option value="{{ c.constituency_id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date" required>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" name="end_date" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="upcoming">Upcoming</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="width:100%;">Create Election</button>
+        </form>
+    </div>
+    <div class="card">
+        <div class="card-title">All Elections</div>
+        <div style="margin-top:12px;">
+            {% for e in elections %}
+            <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div>
+                        <div style="font-weight:600; font-size:0.9rem;">{{ e.title }}</div>
+                        <div style="color:var(--muted); font-size:0.78rem; margin-top:2px;">
+                            {{ e.constituency_name }} · {{ e.start_date }} to {{ e.end_date }}
+                        </div>
+                    </div>
+                    <span class="badge badge-{{ e.status }}">{{ e.status }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% if not elections %}<p style="color:var(--muted); font-size:0.88rem; margin-top:12px;">No elections yet.
+            </p>{% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

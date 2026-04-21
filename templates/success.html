@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Vote Cast Successfully — CivicVote{% endblock %}
+{% block content %}
+<div style="max-width:500px; margin:60px auto; text-align:center;">
+    <div style="font-size:5rem; margin-bottom:24px;">✅</div>
+    <h2 style="font-family:var(--display); font-size:2.5rem; color:var(--green);">Vote Cast!</h2>
+    <p style="color:var(--muted); margin-top:12px; font-size:1rem; line-height:1.6;">
+        Your vote has been recorded securely. Thank you for participating in the democratic process.
+    </p>
+    <div class="card" style="margin-top:32px; text-align:left;">
+        <div class="card-title">What Happened Behind the Scenes</div>
+        <p style="font-size:0.85rem; color:var(--muted); margin-top:8px; line-height:1.8;">
+            ✅ Stored Procedure <strong style="color:var(--gold);">cast_vote()</strong> verified your identity<br>
+            ✅ <strong style="color:var(--gold);">Trigger 1</strong> auto-updated candidate vote count<br>
+            ✅ <strong style="color:var(--gold);">Trigger 2</strong> marked your voter record as voted<br>
+            ✅ Audit log entry created for transparency<br>
+            ✅ UNIQUE constraint prevents any future duplicate vote
+        </p>
+    </div>
+    <div style="display:flex; gap:12px; justify-content:center; margin-top:24px;">
+        <a href="/results"
+            style="background:var(--gold); color:var(--navy); padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:700;">View
+            Live Results</a>
+        <a href="/"
+            style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:700;">Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a2342">
+    <meta name="description" content="CivicVote — Fingerprint Based Voting Machine">
+    <link rel="manifest" href="/manifest.json">
+    <title>{% block title %}CivicVote{% endblock %}</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0a2342;
+            --navy2: #0f3460;
+            --card: #112240;
+            --border: #1e3a5f;
+            --gold: #f4a726;
+            --gold2: #e8921a;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --text: #e8f0fe;
+            --muted: #8ba3c7;
+            --white: #ffffff;
+            --display: 'Playfair Display', serif;
+            --body: 'DM Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--body);
+            background: var(--navy);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Top navbar */
+        .navbar {
+            background: var(--navy2);
+            border-bottom: 2px solid var(--gold);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 36px;
+            height: 36px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .navbar-title {
+            font-family: var(--display);
+            font-size: 1.4rem;
+            color: var(--white);
+            letter-spacing: 1px;
+        }
+
+        .navbar-title span {
+            color: var(--gold);
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            padding: 8px 16px;
+            border-radius: 6px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .navbar-links a:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar-links a.active {
+            color: var(--gold);
+        }
+
+        .btn-vote {
+            background: var(--gold);
+            color: var(--navy) !important;
+            font-weight: 700 !important;
+            border-radius: 6px;
+        }
+
+        .btn-vote:hover {
+            background: var(--gold2) !important;
+        }
+
+        /* Main */
+        .main {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--navy2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--body);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--gold);
+        }
+
+        select option {
+            background: var(--navy2);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-family: var(--body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold2);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-outline:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        /* Page header */
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            font-family: var(--display);
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .page-header p {
+            color: var(--muted);
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--green);
+        }
+
+        .badge-completed {
+            background: rgba(244, 167, 38, 0.15);
+            color: var(--gold);
+        }
+
+        .badge-upcoming {
+            background: rgba(139, 163, 199, 0.15);
+            color: var(--muted);
+        }
+
+        .badge-success {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--green);
+        }
+
+        .badge-failed {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--red);
+        }
+
+        .badge-blocked {
+            background: rgba(244, 167, 38, 0.15);
+            color: var(--gold);
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 0.75rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(244, 167, 38, 0.03);
+        }
+
+        /* Flash messages */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .flash.success {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .flash.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--red);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: var(--gold);
+            transition: width 0.6s ease;
+        }
+
+        /* Fingerprint animation */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        .fingerprint-icon {
+            font-size: 4rem;
+            display: block;
+            text-align: center;
+            animation: none;
+        }
+
+        .fingerprint-icon.scanning {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.05);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .main {
+                padding: 16px;
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    {% block extra_styles %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            <div class="navbar-logo">🗳️</div>
+            <span class="navbar-title">Civic<span>Vote</span></span>
+        </a>
+        <div class="navbar-links">
+            <a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+            <a href="/results" class="{% if request.path == '/results' %}active{% endif %}">Live Results</a>
+            <a href="/verify" class="btn-vote {% if request.path == '/verify' %}active{% endif %}">🗳️ Cast Vote</a>
+            {% if session.get('admin') %}
+            <a href="/admin">Admin Panel</a>
+            <a href="/admin/logout" style="color:var(--red);">Logout</a>
+            {% else %}
+            <a href="/admin/login">Admin</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .catch(err => console.log('SW:', err));
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+
+</html>

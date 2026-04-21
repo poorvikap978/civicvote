@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Select Election — CivicVote{% endblock %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+    <div class="page-header">
+        <h2>Welcome, {{ voter_name }}! 👋</h2>
+        <p>Select the election you want to participate in</p>
+    </div>
+
+    {% if elections %}
+    <div class="grid" style="gap:16px;">
+        {% for election in elections %}
+        <a href="/vote/{{ election.election_id }}" style="text-decoration:none;">
+            <div class="card" style="cursor:pointer; transition:border-color 0.2s; border-color:var(--border);"
+                onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <div>
+                        <h3 style="font-family:var(--display); font-size:1.2rem; color:var(--white);">{{ election.title
+                            }}</h3>
+                        <p style="color:var(--muted); font-size:0.88rem; margin-top:6px;">{{ election.description }}</p>
+                        <p style="color:var(--muted); font-size:0.8rem; margin-top:8px;">
+                            📅 {{ election.start_date }} to {{ election.end_date }}
+                        </p>
+                    </div>
+                    <span class="badge badge-{{ election.status }}">{{ election.status }}</span>
+                </div>
+                <div style="margin-top:16px;">
+                    <span
+                        style="background:var(--gold); color:var(--navy); padding:8px 20px; border-radius:6px; font-weight:700; font-size:0.88rem;">
+                        Vote Now →
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card" style="text-align:center; padding:40px;">
+        <div style="font-size:3rem; margin-bottom:16px;">🗳️</div>
+        <h3 style="color:var(--muted);">No active elections in your constituency.</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
